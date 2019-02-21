@@ -36,6 +36,7 @@ class GameEngine {
         this.ctx = null;
         //this.click = {x:0, y:0};
         this.click = null;
+        this.s = false;
         this.surfaceWidth = null;
         this.surfaceHeight = null;
     }
@@ -62,51 +63,39 @@ class GameEngine {
         var getXandY = function (e) {
             var x = e.clientX - that.ctx.canvas.getBoundingClientRect().left;
             var y = e.clientY - that.ctx.canvas.getBoundingClientRect().top;
+            
+            if (x < 1024) {
+                x = Math.floor(x/15);
+                y = Math.floor(y/15);
+            }
+            //console.log(`x=${x}, y=${y}`);
 
             return { x: x, y: y };
         }
 
-        // this.ctx.canvas.addEventListener("keydown", function (e) {
-        //     //console.log(e);
-        //     console.log("Key Down Event - Char " + e.code + " Code " + e.keyCode);
-        //     e.preventDefualt();
-        // }, false);
+        
         document.addEventListener('keydown', function(e) {
             //console.log("Key Down Event - Char " + e.code + " Code " + e.keyCode);
+            
+            if (e.code == "KeyS") {
+                that.s = true;
+            }
             if (e.code == "Space" && !that.space) {
                 that.space = true;
             }
             else if (e.code == "Space" && that.space) {
                 that.space = false;
             }
+            
             e.preventDefault();
         });
 
-        // this.ctx.canvas.addEventListener("keyup", function (e) {
-        //     console.log("Key Up Event - Char " + e.code + " Code " + e.keyCode);
-        //     //that.keys[e.code] = false;
-        //     e.preventDefault();
-        // }, false);
-
+    
         this.ctx.canvas.addEventListener("click", function (e) {
             //console.log(getXandY(e));
             that.click = getXandY(e);
         }, false);
 
-        // this.ctx.canvas.addEventListener("keydown", function (e) {
-        //     console.log("Key Down Event - Char " + e.code + " Code " + e.keyCode);
-        //     //that.keys[e.code] = true;
-        //     if (e.code == "Space" && !that.space) {
-        //         that.space = true;
-        //     } 
-        //     else if (e.code == "Space" && that.space) {
-        //         that.space = false;
-        //     }
-        // }, false);
-
-        
-
-        
     }
     addEntity(entity) {
         console.log('added entity');
@@ -142,6 +131,7 @@ class GameEngine {
         this.update();
         this.draw();
         this.click = null;
+        this.s = false;
         
     }
     

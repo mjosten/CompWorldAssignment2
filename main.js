@@ -77,6 +77,15 @@ class Cell {
 
         
     }
+    setState(alive) {
+        this.alive = alive;
+        if (this.alive) {
+            this.color = rgb(0, 0, 0);
+        }
+        else {
+            this.color = rgb(255, 255, 255);
+        }
+    }
     update(nextBoard) {
         //console.log(`row=${this.row}, col=${this.col}, alive=${this.alive}`);
         var aliveCount = this.aliveNeighbors();
@@ -214,9 +223,14 @@ class GameBoard extends Entity {
         super.update();
         var nextBoard = [];
 
+        if (this.game.click) {
+            var x = this.game.click.x;
+            var y = this.game.click.y;
+            this.board[x][y].setState(!this.board[x][y].alive);
+        }
 
     
-        if (this.game.click || this.game.space) {
+        if (this.game.s || this.game.space) {
             for (var row = 0; row < this.board.length; row++) {
                 nextBoard.push([]);
                 for (var col = 0; col < this.board[row].length; col++) {
