@@ -37,6 +37,7 @@ class GameEngine {
         //this.click = {x:0, y:0};
         this.click = null;
         this.s = false;
+        this.a = false;
         this.surfaceWidth = null;
         this.surfaceHeight = null;
     }
@@ -80,11 +81,11 @@ class GameEngine {
             if (e.code == "KeyS") {
                 that.s = true;
             }
-            if (e.code == "Space" && !that.space) {
-                that.space = true;
+            if (e.code == "KeyA" && !that.a) {
+                that.a = true;
             }
-            else if (e.code == "Space" && that.space) {
-                that.space = false;
+            else if (e.code == "KeyA" && that.a) {
+                that.a = false;
             }
             
             e.preventDefault();

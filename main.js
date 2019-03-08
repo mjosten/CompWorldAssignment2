@@ -77,6 +77,10 @@ class Cell {
 
         
     }
+    getState() {
+        var data = {row: this.row, col: this.col, alive: this.alive};
+        return data;
+    }
     setState(alive) {
         this.alive = alive;
         if (this.alive) {
@@ -204,6 +208,48 @@ class GameBoard extends Entity {
         }
         
     }
+    save(socket) {
+        //socket.emit("save", { studentname: "Chris Marriott", statename: "aState", data: "Goodbye World" });
+        console.log("save");
+        var gameData = this.getData();
+        socket.emit("save", {studentname: "Michael Josten", statename: "gameOfLifeSavedState", data: gameData});
+        
+    }
+
+    load(stateData) {
+        this.clearBoard();
+        var data = stateData.data;
+        for (var i = 0; i < data.length; i++) {
+            var col = data[i].col;
+            var row = data[i].row;
+            var alive = data[i].alive;
+            this.setCell(row, col, alive);
+        }
+    }
+    
+    getData() {
+        var board = this.board;
+        var dimension = this.dimension;
+        var data = [];
+        for (var i = 0; i < dimension; i++) {
+            for (var j = 0; j < dimension; j++) {
+                data.push(board[i][j].getState());
+            }
+        }
+        
+        //data.push(board[10][10].getState());
+        return data;
+
+    }
+    
+    clearBoard() {
+        for (var i = 0; i < this.dimension; i++) {
+            for (var j = 0; j < this.dimension; j++) {
+                this.board[i][j].setState(false);
+            }
+        }
+    }
+
     initCells() {
         // for (var row = 0; row < STATE1.length; row++) {
         //     for (var col = 0; col < STATE1[row].length; col++) {
@@ -216,7 +262,7 @@ class GameBoard extends Entity {
 
     }
     setCell(row, col, alive) {
-        this.board[row][col].alive = alive;
+        this.board[row][col].setState(alive);
     }
 
     update() {
@@ -230,7 +276,7 @@ class GameBoard extends Entity {
         }
 
     
-        if (this.game.s || this.game.space) {
+        if (this.game.s || this.game.a) {
             for (var row = 0; row < this.board.length; row++) {
                 nextBoard.push([]);
                 for (var col = 0; col < this.board[row].length; col++) {
@@ -297,22 +343,15 @@ class GameBoard extends Entity {
 }
 
 
-function main() {
+window.onload = function() {
+    var socket = io.connect("http://24.16.255.56:8888");
+    
+
+    var saveButton = document.getElementById("save");
+    var loadButton = document.getElementById("load");
+
     console.log("in main");
-    // var ASSET_MANAGER = new AssetManager();
-
-    // ASSET_MANAGER.downloadAll(function () {
-    //     var canvas = document.getElementById('GameOfLife');
-    //     var ctx = canvas.getContext('2d');
-
-
-    //     var gameEngine = new GameEngine();
-    //     var gameBoard = new GameBoard(gameEngine);
-    //     gameEngine.addEntity(gameBoard);
-    //     gameEngine.board = gameBoard;
-    //     gameEngine.init(ctx);
-    //     gameEngine.start();
-    // });
+    
     var canvas = document.getElementById('GameOfLife');
     var ctx = canvas.getContext('2d');
     var gameEngine = new GameEngine();
@@ -321,7 +360,21 @@ function main() {
     gameEngine.addEntity(gameBoard);
     gameEngine.board = gameBoard;
     gameEngine.init(ctx);
-    gameEngine.start();
-}
 
-main();
+    saveButton.onclick = function() {
+        gameEngine.board.save(socket);
+    }
+
+    loadButton.onclick = function() {
+        console.log("load");
+        socket.emit("load", {studentname: "Michael Josten", statename: "gameOfLifeSavedState"});
+    }
+
+    socket.on("load", function (data) {
+        gameBoard.load(data);
+    });
+
+
+    gameEngine.start();
+
+}
