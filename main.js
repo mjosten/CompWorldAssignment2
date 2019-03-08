@@ -217,6 +217,7 @@ class GameBoard extends Entity {
     }
 
     load(stateData) {
+        console.log("in load method");
         this.clearBoard();
         var data = stateData.data;
         for (var i = 0; i < data.length; i++) {
