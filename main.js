@@ -218,6 +218,7 @@ class GameBoard extends Entity {
 
     load(stateData) {
         this.clearBoard();
+        console.log("in load method");
         var data = stateData.data;
         for (var i = 0; i < data.length; i++) {
             var col = data[i].col;
